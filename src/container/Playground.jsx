@@ -12,6 +12,7 @@ import red_tire from '../img/輪胎/輪胎2.png';
 import yellow_tire from '../img/輪胎/輪胎3.png';
 import blue_tire from '../img/輪胎/輪胎4.png';
 import green_tire from '../img/輪胎/輪胎5.png';
+import gameover from '../img/gameover.png';
 
 const allTire = [black_tire, red_tire, yellow_tire, blue_tire, green_tire];
 const allColor = ['黑色','紅色','黃色','藍色','綠色'];
@@ -108,16 +109,19 @@ class PlayGround extends Component{
     super(props);
 
     this.check = this.check.bind(this);
+    this.keydownFunction = this.keydownFunction.bind(this);
     this.handleNextLevel = this.handleNextLevel.bind(this);
     this.randomImage = this.randomImage.bind(this);
+    this.measureTime = this.measureTime.bind(this);
 
     this.state = {
       level: 1,
       seconds: 5,
       score: 0,
-      pass: true,
+      pass: false,
       color: '',
       nextlevel_hidden: 'hidden',
+      fail_hidden: 'hidden',
       tire_hidden: 'hidden',
       countdown_hidden: '',
       three_hidden: '',
@@ -127,6 +131,7 @@ class PlayGround extends Component{
     }
   }
   componentWillMount() {
+    document.addEventListener("keydown", this.keydownFunction, false)
     randomNumber();
   }
   componentDidMount() {
@@ -140,6 +145,20 @@ class PlayGround extends Component{
     setTimeout(() => {this.setState({three_hidden: 'hidden', two_hidden: ''})}, 1000);
     setTimeout(() => {this.setState({two_hidden: 'hidden', one_hidden: ''})}, 2000);
     setTimeout(() => {this.setState({one_hidden: 'hidden', countdown_hidden: 'hidden', tire_hidden: ''})}, 3000);
+    setTimeout(() => {
+      document.addEventListener('keydown', this.measureTime, false);
+    }, 3000)
+    // setTimeout(() => this.measureTime(), 3000);
+  }
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.keydownFunction, false);
+  }
+
+  keydownFunction(e) {
+    if(e.keyCode === 32){
+      this.setState({pass: true});
+      this.check();
+    }
   }
   check() {
     if(this.state.pass === true) {
@@ -149,7 +168,9 @@ class PlayGround extends Component{
       });
     }
     else {
-      
+      this.setState({
+        fail_hidden: '',
+      })
     }
   }
 
@@ -164,6 +185,7 @@ class PlayGround extends Component{
       this.setState({level: this.state.level + 1,})
     }
     this.setState({
+      pass: false,
       nextlevel_hidden: 'hidden', 
       tire_hidden: 'hidden',
       countdown_hidden: '',
@@ -175,10 +197,23 @@ class PlayGround extends Component{
     setTimeout(() => {this.setState({three_hidden: 'hidden', two_hidden: ''})}, 1000);
     setTimeout(() => {this.setState({two_hidden: 'hidden', one_hidden: ''})}, 2000);
     setTimeout(() => {this.setState({one_hidden: 'hidden', countdown_hidden: 'hidden', tire_hidden: ''})}, 3000);
+    setTimeout(() => {
+      document.addEventListener('keydown', this.measureTime, false);
+    }, 3000)
+    // setTimeout(() => this.measureTime(), 3000);
     randomNumber();
     colorText = rand(allColor);
   }
 
+  measureTime(e) {
+    let startTime = new Date();
+    if(e.keyCode === 32) {
+      let endTime = new Date();
+      let totalTime = endTime - startTime;
+      let score = (6000 - totalTime) / 100;
+      this.setState({score: score});
+    }
+  }
   randomImage(i) {
     const tire_style = {
       position: 'absolute',
@@ -219,8 +254,10 @@ class PlayGround extends Component{
         <div className={`nextlevel_container ${this.state.nextlevel_hidden}`}>
           <Button className="nextlevel_button" color='primary' onClick={this.handleNextLevel}>Next Level!</Button>
         </div>
+        <div className={`fail_container ${this.state.fail_hidden}`}>
+          <img className="gameover" src={gameover}/>
+        </div>
         <Score score={this.state.score}/>
-        
         <div className="require_container" style={styles.require_container}>
           <div className="circle" style={styles.circle}>
             <Color/>

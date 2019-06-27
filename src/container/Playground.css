@@ -88,7 +88,6 @@
 }
 
 
-
 .tire_picture_container {
     width: 640px;
     height: 480px;
@@ -115,6 +114,33 @@
     font-weight: bold;
     left: 330px;
 }
+
+.fail_container {
+    border: 1px black solid;
+    width: 640px;
+    height: 480px;
+    position: absolute;
+    top: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:rgba(58, 54, 54, 0.8);
+}
+.gameover {
+    position: absolute;
+    animation-name: slidedown;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
 .hidden {
     display: none;
+}
+
+@keyframes slidedown{
+    0%{
+        top: 40px;
+    }
+    100% {
+        top: 220px;
+    }
 }
